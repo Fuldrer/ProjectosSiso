@@ -7,9 +7,11 @@ extern char readChar();
 void printString(char *ch2);
 void readString(char line[80]);
 void readSector(char *buff, int sec);
-void makeInterrupt21(void);
+void makeInterrupt21();
+void int21(int AX, char* BX, int CX, int DX );
 void infinite(void);
-
+void interrupt(int number, int AX, int BX, int CX, int DX);
+void printerror();
 
 int main()
 {
@@ -17,17 +19,42 @@ int main()
     char line2[512];
     char *space = "\r\n\0";
     char *txt = "Enter a line: \0";
-    printString(txt);
+	char *txt2 = "Buenas \0";
+    /*printString(txt);
     readString(line);
     printString(space);
     printString(line);
     printString(space);
 
     readSector(line2, 30);
-    printString(line2);
+    printString(line2);*/
     
-    //makeInterrupt21();
-    return 0;
+    makeInterrupt21();
+	int21(0,txt, 0, 0);
+	/*int21(1,line,30,0);
+	int21(0,space,0,0);
+	int21(0,line,0,0);
+	int21(0,space,0,0);
+	int21(2,line2,30,0);
+	int21(0,line2,0,0);
+	int21(0,space,0,0);
+	int21(3,0,0,0);*/
+    infinite();
+}
+
+void printerror()
+{
+	char *error = "Esta no es una opcion valida para el interrupt 21 \0";
+	printString(error);
+}
+
+void int21(int AX, char* BX, int CX, int DX)
+{
+	interrupt(0x21, AX, BX, CX, DX);
+}
+
+void infinite(){
+    while(1);
 }
 
 void printString(char *ch2) {
