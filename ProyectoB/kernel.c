@@ -2,8 +2,8 @@
 #define Enter 0x0d
 #define Clear 0x20
 
-extern void printChar(char ch);
-extern char readChar();
+void printChar(char ch);
+char readChar();
 void printString(char *ch2);
 void readString(char line[80]);
 void readSector(char *buff, int sec);
@@ -13,10 +13,13 @@ void infinite(void);
 void handleInterrupt21(int AX, int BX, int CX, int DX);
 void interrupt(int number, int AX, int BX, int CX, int DX);
 void printerror();
+syscall_printString(char *str);
+syscall_readString(char *str);
 
 int main()
 {
-    char line[80];
+	//Step1 & Step2 & Step3
+    /*char line[80];
     char line2[512];
     char *space = "\r\n\0";
     char *txt = "Enter a line: \0";
@@ -29,8 +32,9 @@ int main()
     printString(space);
 
     readSector(line2, 30);
-    printString(line2);*/
+    printString(line2);
     
+	//Step4
     makeInterrupt21();
 	int21(0,txt, 0, 0);
 	int21(1,line,30,0);
@@ -40,7 +44,12 @@ int main()
 	int21(2,line2,30,0);
 	int21(0,line2,0,0);
 	int21(0,space,0,0);
-	//int21(3,0,0,0);
+	int21(3,0,0,0);*/
+
+	//Step5
+
+  	makeInterrupt21();
+    loadProgram();
     infinite();
 }
 
