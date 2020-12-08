@@ -6,7 +6,7 @@
 	.global _putInMemory
 	.global _interrupt
 	.global _makeInterrupt21
-;	.extern _handleInterrupt21
+	.extern _handleInterrupt21
 	.global _printChar
 	.global _readChar
 	.global _readSector
@@ -176,45 +176,42 @@ _interrupt21ServiceRoutine:
 	pop dx
 	iret
 
-_handleInterrupt21:
-	push bp
-	mov bp, sp
-	mov ax , [bp+4]
-	mov bx , [bp+8]
-	mov cx , [bp+12]
-	mov dx , [bp+16]
-	cmp ax , #0
-	je printStringA
-	cmp ax , #1
-	je readStringA
-	cmp ax , #2
-	je _gotoReadSector
-	jmp _unknownOption
+;_handleInterrupt21:
+;	push bp
+;	mov bp, sp
+;	mov ax,[bp+4]	;get the other parameters AX, BX, CX, and DX
+;	mov bx,[bp+8]
+;	cmp ax , #0
+;	je printStringA
+;	cmp ax , #1
+;	je readStringA
+;	cmp ax , #2
+;	je _gotoReadSector
+;	jmp _unknownOption
+;
+;	printStringA:
+;		push bx
+;		call _printString
+;		pop ax
+;		pop bp
+;		ret
+;
+;	readStringA:
+;		push bx
+;		call _readString
+;		pop bx
+;		pop bp
+;		ret
 
-	printStringA:
-		push bx
-		call _printString
-		pop bx
-		pop bp
-		ret
-
-	readStringA:
-		push bx
-		call _readString
-		pop bx
-		pop bp
-		ret
-
-	_gotoReadSector:
-		push cx
-		push bx
-		call _readSector
-		pop cx
-		pop bx
-		pop bp
-		ret
-
-	_unknownOption:
-		call _printerror
-		ret
-
+;	_gotoReadSector:
+;		push cx
+;		push bx
+;		call _readSector
+;		pop cx
+;		pop bx
+;		pop bp
+;		ret
+;
+;	_unknownOption:
+;		call _printerror
+;		ret

@@ -10,6 +10,7 @@ void readSector(char *buff, int sec);
 void makeInterrupt21();
 void int21(int AX, char* BX, int CX, int DX );
 void infinite(void);
+void handleInterrupt21(int AX, int BX, int CX, int DX);
 void interrupt(int number, int AX, int BX, int CX, int DX);
 void printerror();
 
@@ -20,6 +21,7 @@ int main()
     char *space = "\r\n\0";
     char *txt = "Enter a line: \0";
 	char *txt2 = "Buenas \0";
+	char txt3 = 'Q';
     /*printString(txt);
     readString(line);
     printString(space);
@@ -31,15 +33,34 @@ int main()
     
     makeInterrupt21();
 	int21(0,txt, 0, 0);
-	/*int21(1,line,30,0);
+	int21(1,line,30,0);
 	int21(0,space,0,0);
 	int21(0,line,0,0);
 	int21(0,space,0,0);
 	int21(2,line2,30,0);
 	int21(0,line2,0,0);
 	int21(0,space,0,0);
-	int21(3,0,0,0);*/
+	//int21(3,0,0,0);
     infinite();
+}
+
+void handleInterrupt21(int AX, int BX, int CX, int DX)
+{
+	switch (AX)
+	{
+	case 0:
+		printString(BX);
+		break;
+	case 1:
+		readString(BX);
+		break;
+	case 2:
+		readSector(BX,CX);
+		break;
+	default:
+		printerror();
+		break;
+	}
 }
 
 void printerror()
