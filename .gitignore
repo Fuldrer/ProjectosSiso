@@ -1,0 +1,8 @@
+.git/
+ProyectoA/*.o
+ProyectoA/kernel
+
+ProyectoB/*.o
+ProyectoB/*.pdf
+ProyectoB/kernel
+ProyectoB/bochsout.txt
