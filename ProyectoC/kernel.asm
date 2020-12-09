@@ -14,6 +14,7 @@
 	.extern _printString
 	.extern _readString
 	.extern _printerror
+	.global _clearScreen
 
 
 ;printChar(char ch);
@@ -176,42 +177,82 @@ _interrupt21ServiceRoutine:
 	pop dx
 	iret
 
-;_handleInterrupt21:
-;	push bp
-;	mov bp, sp
-;	mov ax,[bp+4]	;get the other parameters AX, BX, CX, and DX
-;	mov bx,[bp+8]
-;	cmp ax , #0
-;	je printStringA
-;	cmp ax , #1
-;	je readStringA
-;	cmp ax , #2
-;	je _gotoReadSector
-;	jmp _unknownOption
-;
-;	printStringA:
-;		push bx
-;		call _printString
-;		pop ax
-;		pop bp
-;		ret
-;
-;	readStringA:
-;		push bx
-;		call _readString
-;		pop bx
-;		pop bp
-;		ret
+;this is called to start a program that is loaded into memory
+;void launchProgram(int segment)
+_launchProgram:
+	mov bp,sp
+	mov bx,[bp+2]	;get the segment into bx
 
-;	_gotoReadSector:
-;		push cx
-;		push bx
-;		call _readSector
-;		pop cx
-;		pop bx
-;		pop bp
-;		ret
-;
-;	_unknownOption:
-;		call _printerror
-;		ret
+	mov ax,cs	;modify the jmp below to jump to our segment
+	mov ds,ax	;this is self-modifying code
+	mov si,#jump
+	mov [si+3],bx	;change the first 0000 to the segment
+
+	mov ds,bx	;set up the segment registers
+	mov ss,bx
+	mov es,bx
+
+	mov sp,#0xfff0	;set up the stack pointer
+	mov bp,#0xfff0
+
+jump:	jmp #0x0000:0x0000	;and start running (the first 0000 is changed above)
+
+;printhex is used for debugging only
+;it prints out the contents of ax in hexadecimal
+_printhex:
+        push bx
+        push ax
+        push ax
+        push ax
+        push ax
+        mov al,ah
+        mov ah,#0xe
+        mov bx,#7
+        shr al,#4
+        and al,#0xf
+        cmp al,#0xa
+        jb ph1
+        add al,#0x7
+ph1:    add al,#0x30
+        int 0x10
+
+        pop ax
+        mov al,ah
+        mov ah,#0xe
+        and al,#0xf
+        cmp al,#0xa
+        jb ph2
+        add al,#0x7
+ph2:    add al,#0x30
+        int 0x10
+
+        pop ax
+        mov ah,#0xe
+        shr al,#4
+        and al,#0xf
+        cmp al,#0xa
+        jb ph3
+        add al,#0x7
+ph3:    add al,#0x30
+        int 0x10
+
+        pop ax
+        mov ah,#0xe
+        and al,#0xf
+        cmp al,#0xa
+        jb ph4
+        add al,#0x7
+ph4:    add al,#0x30
+        int 0x10
+
+        pop ax
+        pop bx
+        ret
+
+_clearScreen:
+	push bp
+	mov bp, sp
+	mov ax, #0x0003
+	int #0x10
+	leave
+	ret

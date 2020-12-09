@@ -13,9 +13,10 @@ void infinite(void);
 void handleInterrupt21(int AX, int BX, int CX, int DX);
 void interrupt(int number, int AX, int BX, int CX, int DX);
 void printerror();
-syscall_printString(char *str);
-syscall_readString(char *str);
-
+void executeProgram(char *name, int segment);
+void readfile(char *txt, char *buffer);
+void terminate();
+void clearScreen();
 int main()
 {
 	//Step1 & Step2 & Step3
@@ -49,8 +50,27 @@ int main()
 	//Step5
 
   	makeInterrupt21();
+	//executeProgram("shell", 0x2000);
     loadProgram();
     infinite();
+}
+
+
+void readFile(char *name, char *buffer)
+{
+	int i = 31;
+	int buf = 512;
+	while( i < 32)
+	{
+		readSector(buffer[buf], i);
+		if(buffer[buf] == name)
+		{
+			break;
+		}
+		printString("Da una vuelta\0");
+		buf+= 512;
+		i++;
+	}
 }
 
 void handleInterrupt21(int AX, int BX, int CX, int DX)
@@ -66,10 +86,26 @@ void handleInterrupt21(int AX, int BX, int CX, int DX)
 	case 2:
 		readSector(BX,CX);
 		break;
+	case 3:
+		readFile(BX,CX);
+		break;
+	case 4:
+		loadProgram(BX,CX);
+	case 5:
+		terminate();
+		break;
+	case 6:
+		clearScreen();
+		break;
 	default:
 		printerror();
 		break;
 	}
+}
+
+void terminate()
+{
+	while(1);
 }
 
 void printerror()

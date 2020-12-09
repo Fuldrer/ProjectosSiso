@@ -1,8 +1,19 @@
     .global _syscall_readSector
     .global _syscall_printString
     .global _syscall_readString
-    
+    .global _syscall_readFile
 
+;syscall_readFile(char *name, char* buffer)
+_syscall_readFile:
+    push bp
+    mov bp, sp
+    mov ax, #3
+    mov bx, [bp+4]
+    mov cx, [bp+6]
+    int #0x21
+    pop bp
+    leave
+    ret
 ;syscall_readSector(char *buffer, int sector)
 _syscall_readSector:
     push bp
