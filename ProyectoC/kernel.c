@@ -1,7 +1,11 @@
 #define Back 0x08
 #define Enter 0x0d
 #define Clear 0x20
+#define TRUE 1
+#define FALSE 0
 
+int comparename(char filename[6], char *start);
+void readFile(char *filename, char *buffer);
 void printChar(char ch);
 char readChar();
 void printString(char *ch2);
@@ -9,68 +13,83 @@ void readString(char line[80]);
 void readSector(char *buff, int sec);
 void makeInterrupt21();
 void int21(int AX, char* BX, int CX, int DX );
-void infinite(void);
 void handleInterrupt21(int AX, int BX, int CX, int DX);
 void interrupt(int number, int AX, int BX, int CX, int DX);
 void printerror();
 void executeProgram(char *name, int segment);
-void readfile(char *txt, char *buffer);
 void terminate();
 void clearScreen();
+
+
 int main()
 {
-	//Step1 & Step2 & Step3
-    /*char line[80];
-    char line2[512];
-    char *space = "\r\n\0";
-    char *txt = "Enter a line: \0";
-	char *txt2 = "Buenas \0";
-	char txt3 = 'Q';
-    /*printString(txt);
-    readString(line);
-    printString(space);
-    printString(line);
-    printString(space);
-
-    readSector(line2, 30);
-    printString(line2);
-    
-	//Step4
-    makeInterrupt21();
-	int21(0,txt, 0, 0);
-	int21(1,line,30,0);
-	int21(0,space,0,0);
-	int21(0,line,0,0);
-	int21(0,space,0,0);
-	int21(2,line2,30,0);
-	int21(0,line2,0,0);
-	int21(0,space,0,0);
-	int21(3,0,0,0);*/
-
-	//Step5
-
+    char buffer[13312];
+    readFile("messag",buffer);
+    printString(buffer);
   	makeInterrupt21();
 	//executeProgram("shell", 0x2000);
     loadProgram();
-    infinite();
+}
+
+int comparename(char *filename, char *start)
+{
+    int i;
+    for(i = 0; i<6;i++)
+    {
+        if(filename[i] == start[i])
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 
-void readFile(char *name, char *buffer)
+void readFile(char *fileName, char *buffer)
 {
-	int i = 31;
-	int buf = 512;
-	while( i < 32)
-	{
-		readSector(buffer[buf], i);
-		if(buffer[buf] == name)
-		{
-			break;
-		}
-		printString("Da una vuelta\0");
-		buf+= 512;
-		i++;
-	}
+    //char *check = "Hola \0";
+    //printString(check);
+    int bufferdir = 0;
+    int comp;
+    int i,j,a,b, sectorfile;
+    char buffer2[512];
+    char *check = "File not found \0";
+    char* check2 = "File found \0";
+    char* diskfilename;
+    a = 0;
+
+    readSector(buffer2, 2);
+    for(i = 0; i < 512; i+= 32)
+    {
+        for(a = 0; a < 6 ; a++)
+        {
+            if(i < 32)
+            {
+                diskfilename[a] = buffer2[a];
+            }
+            diskfilename[a] = buffer2[a+i];
+        }
+        comp = comparename(fileName, diskfilename);
+        if(comp == 1)
+        {
+            for(a = 0; a < 26;a++)
+            {
+                if(i < 32)
+                {
+                    sectorfile = buffer2[a+6];
+                }
+                sectorfile = buffer2[a+i+6];
+                readSector(buffer, sectorfile);
+                buffer += 512;
+            }
+            printString(check2);
+            printString("\r\n");
+            return;
+        }
+    }
+    printString(check);
+    printString("\r\n");
+    return;
 }
 
 void handleInterrupt21(int AX, int BX, int CX, int DX)
@@ -117,10 +136,6 @@ void printerror()
 void int21(int AX, char* BX, int CX, int DX)
 {
 	interrupt(0x21, AX, BX, CX, DX);
-}
-
-void infinite(){
-    while(1);
 }
 
 void printString(char *ch2) {

@@ -18,10 +18,10 @@ int main()
     syscall_printString("\r\n");
     syscall_readSector(buffer, 31);
     syscall_printString(buffer);
-    syscall_printString("\r\n");
-    syscall_printString("Buenas Como estan Todos");*/
-    char buffer[13312];
+    syscall_printString("\r\n");*/
+    syscall_printString("Buenas Como estan Todos");
+    /*char buffer[13312];
     syscall_readFile("message", buffer);
-    syscall_printString(buffer);
+    syscall_printString(buffer);*/
     while(1);
 }

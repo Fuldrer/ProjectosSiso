@@ -12,6 +12,7 @@
 	.global _readSector
 	.global _loadProgram
 	.extern _printString
+	.extern _readFile
 	.extern _readString
 	.extern _printerror
 	.global _clearScreen
