@@ -2,6 +2,7 @@ syscall_printString(char *str);
 syscall_readString(char *str);
 syscall_readSector(char *buffer, int sector);
 syscall_readFile(char*name, char*buffer);
+syscall_terminate();
 
 int main()
 {
@@ -20,8 +21,9 @@ int main()
     syscall_printString(buffer);
     syscall_printString("\r\n");*/
     syscall_printString("Buenas Como estan Todos");
+    syscall_printString("\r\n");
+    syscall_terminate();
     /*char buffer[13312];
     syscall_readFile("message", buffer);
     syscall_printString(buffer);*/
-    while(1);
 }

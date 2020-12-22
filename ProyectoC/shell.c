@@ -2,6 +2,8 @@ syscall_readSector(char *buffer, int sector);
 syscall_printString(char *str);
 syscall_readString(char *str);
 syscall_readFile(char *str, char*buffer);
+syscall_executeProgram(char*name, int segment);
+syscall_terminate();
 syscall_clearScreen();
 
 
@@ -15,14 +17,12 @@ void call(char*input);
 
 int main()
 {
-    while(1)
-    {
     char str[80], argument[512];
     syscall_printString("QUORR:>");
     syscall_readString(str);
     syscall_printString("\r\n");
     call(str);
-    }
+    syscall_terminate();
 }
 
 int check(char *str, char *syntax, int size)
@@ -44,10 +44,10 @@ void call(char *input)
     comms commands[3];
     char *filename;
     commands[0].syntax = "type";
-    commands[1].syntax = "load";
+    commands[1].syntax = "execute";
     commands[2].syntax = "clear";
     commands[2].size = 5;
-    commands[1].size = 4;
+    commands[1].size = 7;
     commands[0].size = 4;
     if(check(input,commands[2].syntax, commands[2].size))
     {
@@ -55,6 +55,8 @@ void call(char *input)
     }
     else if(check(input,commands[1].syntax, commands[1].size))
     {
+            filename = (input + commands[0].size) + 1;
+            syscall_executeProgram(filename,0x2000);
             syscall_printString("Command not implemented \0");
             syscall_printString("\r\n");
     }
@@ -62,7 +64,7 @@ void call(char *input)
     {
             filename = (input + commands[0].size) + 1;
             syscall_readFile(filename,buffer);
-            //syscall_printString(buffer);
+            syscall_printString(buffer);
             syscall_printString("\r\n");
     }
     else

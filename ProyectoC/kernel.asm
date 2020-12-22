@@ -11,6 +11,7 @@
 	.global _readChar
 	.global _readSector
 	.global _loadProgram
+	.global _launchProgram
 	.extern _printString
 	.extern _readFile
 	.extern _readString
@@ -108,6 +109,7 @@ _loadProgram:
 ;call BIOS disk read function
 ; Switch to program
 	jmp #0x2000:#0
+
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:

@@ -17,18 +17,33 @@ void handleInterrupt21(int AX, int BX, int CX, int DX);
 void interrupt(int number, int AX, int BX, int CX, int DX);
 void printerror();
 void executeProgram(char *name, int segment);
+void putInMemory(int segment, int address,char character);
+void launchProgram(int segment);
 void terminate();
 void clearScreen();
 
 
 int main()
 {
-    char buffer[13312];
+    /*char buffer[13312];
     readFile("messag",buffer);
-    printString(buffer);
+    printString(buffer);*/
   	makeInterrupt21();
-	//executeProgram("shell", 0x2000);
-    loadProgram();
+	executeProgram("shell", 0x2000);
+}
+
+void executeProgram(char*name, int segment)
+{
+    char buffer[13312];
+    int i = 0;
+
+    readFile(name, buffer);
+    for( i = 0; i < 13312; i++)
+    {
+        putInMemory(segment,i,buffer[i]);
+    }
+
+    launchProgram(segment);
 }
 
 int comparename(char *filename, char *start)
@@ -109,7 +124,9 @@ void handleInterrupt21(int AX, int BX, int CX, int DX)
 		readFile(BX,CX);
 		break;
 	case 4:
-		loadProgram(BX,CX);
+		//loadProgram(BX,CX);
+		executeProgram(BX,CX);
+		break;
 	case 5:
 		terminate();
 		break;
@@ -124,7 +141,7 @@ void handleInterrupt21(int AX, int BX, int CX, int DX)
 
 void terminate()
 {
-	while(1);
+	executeProgram("shell", 0x2000);
 }
 
 void printerror()

@@ -2,6 +2,8 @@
     .global _syscall_readSector
     .global _syscall_printString
     .global _syscall_readString
+    .global _syscall_executeProgram
+    .global _syscall_terminate
     .global _syscall_clearScreen
     
 ;syscall_readFile(char *name, char* buffer)
@@ -43,6 +45,27 @@ _syscall_readString:
     mov bp, sp
     mov ax, #1
     mov bx, [bp+4]  ;str
+    int #0x21
+    leave
+    ret
+
+
+;void syscall_executeProgram(char *name, int segment)
+_syscall_executeProgram:
+    push bp
+    mov bp, sp
+    mov ax, #4
+    mov bx, [bp+4] ;name
+    mov cx, [bp+6] ;segment
+    int #0x21
+    leave
+    ret
+
+;void syscall_terminate()
+_syscall_terminate:
+    push bp
+    mov bp, sp
+    mov ax, #5
     int #0x21
     leave
     ret
